@@ -23,7 +23,7 @@ define('MAX_LOGIN_ATTEMPTS', 5);
 define('LOGIN_TIMEOUT', 300); // 5 minutes in seconds
 
 // Get admin password from Home Assistant addon config
-$configPath = '/visitors_config/options.json';
+$configPath = '/data/options.json';
 if (file_exists($configPath)) {
     $config = json_decode(file_get_contents($configPath), true);
     $adminPassword = $config['admin_password'] ?? null;

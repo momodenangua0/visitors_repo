@@ -19,7 +19,4 @@ startup: application
 schema:
   admin_password: password?
 
-map:
-  - type: addon_config
-    read_only: False
-    path: /visitors_config
+
