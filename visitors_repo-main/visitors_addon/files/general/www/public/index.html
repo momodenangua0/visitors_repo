@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facility visitor sign-in by Chill Division</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            position: relative; /* Added to position the admin link */
+        }
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        @media (min-width: 769px) {
+            .container {
+                max-width: 1130px;
+                margin: 0 auto;
+            }
+        }
+        form {
+            margin-bottom: 2rem;
+        }
+        .admin-link {
+            position: absolute; /* Position in top-right corner */
+            top: 10px;
+            right: 10px;
+            text-decoration: none;
+            color: #333; /* Matches the general theme */
+        }
+        .admin-link:hover {
+            color: #000; /* Darkens on hover for better visibility */
+        }
+        .material-icons {
+            font-size: 24px; /* Size of the icon */
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Page Link -->
+    <a href="admin.php" class="admin-link" title="Admin Access">
+        <span class="material-icons">lock_open</span>
+    </a>
+
+    <main class="container">
+        <h1>Facility visitor sign-in by Chill Division</h1>
+        <form id="sign-in-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="contact">Contact #:</label>
+            <input type="text" id="contact" name="contact" required><br>
+
+            <label for="company">Company:</label>
+            <input type="text" id="company" name="company"><br>
+
+            <label for="visiting">Visiting:</label>
+            <input type="text" id="visiting" name="visiting" required><br>
+
+            <div id="terms"></div>
+
+            <button type="submit">Sign In</button>
+        </form>
+
+        <h2>Sign Out</h2>
+        <label for="sign-out-name">Start typing your name, then tap to sign out:</label>
+        <input type="text" id="sign-out-name">
+        <div id="sign-out-options"></div>
+    </main>
+
+    <script>
+        $(document).ready(function() {
+            // Fetch and display terms on page load
+            $.ajax({
+                url: 'process.php',
+                type: 'POST',
+                data: { action: 'get_terms' },
+                success: function(response) {
+                    $('#terms').html(response);
+                }
+            });
+
+            // Handle sign-in form submission
+            $('#sign-in-form').submit(function(event) {
+                event.preventDefault();
+
+                // Gather form data including checked terms
+                var formData = $(this).serializeArray();
+                formData.push({ name: 'action', value: 'sign_in' });
+
+                $.ajax({
+                    url: 'process.php',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        alert(response);
+                        // Clear the form fields after successful sign-in
+                        $('#sign-in-form')[0].reset();
+                    }
+                });
+            });
+
+            // Handle sign-out name input
+            $('#sign-out-name').on('input', function() {
+                let searchTerm = $(this).val();
+                if (searchTerm.length >= 3) {
+                    $.ajax({
+                        url: 'process.php',
+                        type: 'POST',
+                        data: { action: 'search_for_sign_out', searchTerm: searchTerm },
+                        success: function(response) {
+                            $('#sign-out-options').html(response);
+                        }
+                    });
+                } else {
+                    $('#sign-out-options').empty();
+                }
+            });
+
+            // Handle sign-out button click
+            $(document).on('click', '.sign-out-button', function() {
+                var visitorId = $(this).data('visitor-id');
+                $.ajax({
+                    url: 'process.php',
+                    type: 'POST',
+                    data: { action: 'sign_out', visitorId: visitorId },
+                    success: function(response) {
+                        alert(response);
+                        // Clear the sign-out options and the search input
+                        // $('#sign-out-options').empty();
+                        // $('#sign-out-name').val('');
+                        location.reload();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

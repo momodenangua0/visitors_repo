@@ -1,0 +1,25 @@
+name: "Visitors Sign-in"
+description: "Visitors sign-in register"
+url: "https://www.chilldivision.co.nz"
+codenotary: josiah@chilldivision.co.nz
+version: "0.9.5.1"
+slug: "visitors_addon"
+panel_icon: mdi:clipboard-account-outline
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+ingress: true
+ingress_port: 8420
+startup: application
+
+schema:
+  admin_password: password?
+
+map:
+  - type: addon_config
+    read_only: False
+    path: /visitors_config
