@@ -24,6 +24,7 @@ RUN apk -U upgrade && apk add --no-cache \
     } > /etc/php83/conf.d/21-session.ini
 
 COPY files/general files/php83 /
+RUN chmod +x /etc/services.d/nginx/run /etc/services.d/php-fpm83/run
 RUN chown php:nginx /www/public/visitor_signin.db
 
 ENTRYPOINT ["/init"]
